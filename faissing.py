@@ -6,9 +6,9 @@ from langchain_community.vectorstores import FAISS
 def faiss():
     pdf = PyPDFLoader('./PDFs/test.pdf')
     data = pdf.load()
-    model = HuggingFaceEmbeddings('all-MiniLM-L6-v2')
+    model = HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
     
-    vectorDb = FAISS().from_documents(documents=data,embedding=model)
+    vectorDb = FAISS.from_documents(documents=data,embedding=model)
     return vectorDb
 
 if __name__=="__main__":
