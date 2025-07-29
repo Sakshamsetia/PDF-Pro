@@ -3,11 +3,6 @@ const themeToggle = document.getElementById('themeToggle');
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const modalFileInput = document.getElementById('modalFileInput');
-const uploadProgress = document.getElementById('uploadProgress');
-const progressBar = document.getElementById('progressBar');
-const progressPercent = document.getElementById('progressPercent');
-const fileName = document.getElementById('fileName');
-const fileSize = document.getElementById('fileSize');
 const uploadSection = document.getElementById('uploadSection');
 const chatSection = document.getElementById('chatSection');
 const currentDocument = document.getElementById('currentDocument');
@@ -137,8 +132,8 @@ function handleFileSelect(e) {
     
     if (!selectedFile) return;
     
-    if (!selectedFile.type.includes('pdf')) {
-        showToast('Please select a PDF file', 'error');
+    if (selectedFile.type !== 'application/pdf') {
+        showToast('Please select a valid PDF file', 'error');
         return;
     }
     
@@ -151,51 +146,30 @@ function handleFileSelect(e) {
     
     // Prepare UI for upload
     uploadSection.querySelector('.upload-area').classList.add('hidden');
-    uploadProgress.classList.remove('hidden');
-    
-    // Display file info
-    fileName.textContent = selectedFile.name;
-    fileSize.textContent = formatFileSize(selectedFile.size);
-    
+        
     // Close modal if open
     uploadModal.classList.add('hidden');
     
     // Simulate upload progress
     simulateUpload(selectedFile);
 }
-
 // Simulate file upload (in a real app, this would be an actual upload)
-function simulateUpload(file) {
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += Math.random() * 10;
-        if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
-            
-            // Save the file
-            currentPDF = {
-                name: file.name,
-                size: file.size,
-                date: new Date()
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('currentPDF', JSON.stringify(currentPDF));
-            
-            // Show chat interface after a delay
-            setTimeout(() => {
-                showChatInterface();
-                showToast('PDF uploaded successfully');
-            }, 500);
-        }
-        
-        // Update progress bar
-        progressBar.style.width = `${progress}%`;
-        progressPercent.textContent = `${Math.round(progress)}%`;
-    }, 200);
-}
+async function simulateUpload(pdfFile) {
+    let forminfo = new FormData()
+    forminfo.append('file',pdfFile)
+    let response = await fetch('/files',{
+        method: 'POST',
+        body: forminfo
+    })
+    let data = await response.json()
+    console.log(data)
 
+    // Show chat interface after a delay
+    setTimeout(() => {
+        showChatInterface();
+        showToast('PDF uploaded successfully');
+    }, 100);
+}
 // Format file size for display
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
@@ -211,10 +185,7 @@ function formatFileSize(bytes) {
 function showChatInterface() {
     uploadSection.classList.add('hidden');
     chatSection.classList.remove('hidden');
-    
-    // Set current document name
-    currentDocument.textContent = currentPDF.name;
-    
+        
     // Clear any existing messages and show welcome message
     messages = [];
     renderMessages();
@@ -222,19 +193,17 @@ function showChatInterface() {
 
 // Remove the current PDF and show upload interface
 function removeCurrentPDF() {
-    if (confirm('Remove this PDF and start over?')) {
-        currentPDF = null;
-        localStorage.removeItem('currentPDF');
-        
-        // Reset UI
-        chatSection.classList.add('hidden');
-        uploadSection.classList.remove('hidden');
-        uploadProgress.classList.add('hidden');
-        uploadArea.classList.remove('hidden');
-        fileInput.value = '';
-        
-        showToast('PDF removed');
-    }
+    currentPDF = null;
+    localStorage.removeItem('currentPDF');
+    
+    // Reset UI
+    chatSection.classList.add('hidden');
+    uploadSection.classList.remove('hidden');
+    uploadArea.classList.remove('hidden');
+    fileInput.value = '';
+    uploadSection.querySelector('.upload-area').classList.remove('hidden');
+
+    showToast('PDF removed');
 }
 
 // Render chat messages
