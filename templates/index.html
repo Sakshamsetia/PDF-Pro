@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Insight | AI-Powered Document Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="app-title">PDF Insight</div>
+            <button id="themeToggle" class="btn btn-ghost btn-icon">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <!-- Upload Area (shown when no PDF is loaded) -->
+        <div id="uploadSection" class="flex flex-col items-center justify-center" style="min-height: 60vh;">
+            <div class="upload-area w-full max-w-md" id="uploadArea">
+                <i class="fas fa-file-pdf text-4xl mb-3 text-primary"></i>
+                <h3 class="font-medium mb-1">Upload a PDF to analyze</h3>
+                <p class="text-muted text-sm mb-3">Drag & drop your file or click to browse</p>
+                <input type="file" id="fileInput" accept=".pdf" class="hidden">
+                <button class="btn btn-primary px-4">Select PDF</button>
+            </div>
+            
+            <div id="uploadProgress" class="hidden w-full max-w-md mt-4">
+                <div class="card p-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span id="fileName" class="font-medium truncate">document.pdf</span>
+                        <span id="fileSize">0 MB</span>
+                    </div>
+                    <div class="progress-container">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                    <div class="text-right text-sm text-muted mt-1">
+                        <span id="progressPercent">0%</span> uploaded
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface (hidden initially) -->
+        <div id="chatSection" class="hidden w-full">
+            <!-- Current Document Info -->
+            <div class="document-info">
+                <i class="fas fa-file-pdf document-icon"></i>
+                <div class="document-name" id="currentDocument">document.pdf</div>
+                <i class="fas fa-times document-remove" id="removeDocument"></i>
+            </div>
+            
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome Message -->
+                    <div class="message message-assistant">
+                        <div class="message-bubble assistant-bubble">
+                            <p>Hello! I've analyzed your PDF. Ask me anything about its contents.</p>
+                            <div class="message-meta">
+                                <i class="fas fa-robot mr-1"></i> PDF Assistant
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Ask a question about the PDF...">
+                    <button id="sendBtn" class="btn btn-primary btn-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Modal -->
+        <div id="uploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
+            <div class="card w-full max-w-md">
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium">Upload PDF</h3>
+                        <button id="closeModalBtn" class="btn btn-ghost btn-icon">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="modalUploadArea" class="upload-area">
+                        <i class="fas fa-file-pdf text-4xl mb-3 text-primary"></i>
+                        <h4 class="font-medium mb-1">Drag & drop your PDF here</h4>
+                        <p class="text-muted text-sm mb-3">or click to browse files</p>
+                        <input type="file" id="modalFileInput" accept=".pdf" class="hidden">
+                        <button class="btn btn-primary px-4">Select File</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="toast">
+            <div class="flex items-center gap-2">
+                <i id="toastIcon" class="fas fa-check"></i>
+                <span id="toastMessage">File uploaded successfully</span>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+</html>

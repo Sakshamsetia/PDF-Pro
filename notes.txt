@@ -2,5 +2,5 @@
 1) Create a Rag pipeline for converting pdf to faiss vectorDb ---> Done 
 2) Create a custom Gemini model for the same ---> Done 
 3) Use a retriever Rag Pipeline to use rag to retrieve context and answer the question --->Done
-4) Create a modular frontend using html css and js 
+4) Create a modular frontend using html css and js ---> Done
 5) Use flask to connect both the sides
