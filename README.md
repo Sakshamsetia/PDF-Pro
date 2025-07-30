@@ -20,7 +20,7 @@ PDF-Pro is an intelligent document assistant that lets you chat with your PDFs! 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/pdf-pro.git
+   git clone https://github.com/Sakshamsetia/PDF-Pro.git
    cd pdf-pro
 2. Create and activate a virtual environment
     ```bash
