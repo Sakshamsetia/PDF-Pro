@@ -24,6 +24,7 @@ let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
 // Initialize the app
 function init() {
+    hideLoader()
     // Set initial theme
     setTheme(isDarkMode);
     
@@ -127,7 +128,7 @@ function setTheme(dark) {
 }
 
 // Handle file selection
-function handleFileSelect(e) {
+async function handleFileSelect(e) {
     const selectedFile = e.target.files[0];
     
     if (!selectedFile) return;
@@ -146,15 +147,17 @@ function handleFileSelect(e) {
     
     // Prepare UI for upload
     uploadSection.querySelector('.upload-area').classList.add('hidden');
-        
+    
     // Close modal if open
     uploadModal.classList.add('hidden');
-    
+    showLoader();
     // Simulate upload progress
-    simulateUpload(selectedFile);
+    await simulateUpload(selectedFile);
+    hideLoader();
 }
 // Simulate file upload (in a real app, this would be an actual upload)
 async function simulateUpload(pdfFile) {
+    console.log('pdf uploading')
     let forminfo = new FormData()
     forminfo.append('file',pdfFile)
     let response = await fetch('/files',{
@@ -212,7 +215,7 @@ function renderMessages() {
     let html = `
         <div class="message message-assistant">
             <div class="message-bubble assistant-bubble">
-                <p>I've analyzed "${currentPDF.name}". Ask me anything about its contents.</p>
+                <p>I've analyzed the PDF. Ask me anything about its contents.</p>
                 <div class="message-meta">
                     <i class="fas fa-robot mr-1"></i> PDF Assistant
                 </div>
@@ -241,10 +244,10 @@ function renderMessages() {
 }
 
 // Send a new message
-function sendMessage() {
+async function sendMessage() {
     const messageText = chatInput.value.trim();
-    if (!messageText || !currentPDF) return;
-    
+    if (!messageText) return;
+    console.log("message in the chain")
     // Add user message to UI
     addMessage('user', messageText);
     
@@ -271,27 +274,32 @@ function sendMessage() {
             </div>
         </div>
     `;
+    console.log('user Uploaded')
     scrollToBottom();
+    let data = new FormData();
+
+    data.append('text',messageText);
+
+
+    let response = await fetch('/chat',{
+        method: 'POST',
+        body: data
+    });
+    console.log('got reply from backend')
+    let reply = await response.json();
+
+    // Add assistant message
+    const loadingElement = document.getElementById(loadingId);
+    if (loadingElement) loadingElement.remove();
+    addMessage('assistant', reply["text"]);
     
-    // Simulate API response delay
-    setTimeout(() => {
-        // Remove loading indicator
-        const loadingElement = document.getElementById(loadingId);
-        if (loadingElement) loadingElement.remove();
-        
-        // Generate a mock response (in a real app, this would come from an API)
-        const response = generateMockResponse(messageText);
-        
-        // Add assistant message
-        addMessage('assistant', response);
-        
-        // Save assistant message
-        messages.push({
-            role: 'assistant',
-            content: response,
-            timestamp: new Date()
-        });
-    }, 1500 + Math.random() * 2000); // Random delay between 1.5-3.5s
+    // Save assistant message
+    messages.push({
+        role: 'assistant',
+        content: reply["text"],
+        timestamp: new Date()
+    });
+    
 }
 
 // Add a message to the chat UI
@@ -311,20 +319,6 @@ function addMessage(role, content) {
     
     chatMessages.innerHTML += messageHtml;
     scrollToBottom();
-}
-
-// Generate a mock response (for demo purposes)
-function generateMockResponse(question) {
-    const responses = [
-        `Based on the document, ${question.toLowerCase().replace('?', '')} is covered in section 3.2 on page 15.`,
-        `The document mentions that ${question.toLowerCase().replace('?', '')} several times, particularly in the context of the main findings.`,
-        `I found relevant information about ${question.toLowerCase().replace('?', '')} in the conclusion section. Would you like me to summarize it?`,
-        `The PDF doesn't explicitly address ${question.toLowerCase().replace('?', '')}, but it does discuss related concepts in chapter 4.`,
-        `There are three main points in the document regarding ${question.toLowerCase().replace('?', '')}: first, the introduction covers the background; second, the methodology explains the approach; and third, the results show the outcomes.`,
-        `I've analyzed the document and ${question.toLowerCase().replace('?', '')} appears to be a key theme throughout. The most detailed discussion is in the appendix.`
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
 }
 
 // Scroll chat to the bottom
@@ -353,6 +347,17 @@ function showToast(message, type = 'success') {
         toast.classList.remove('show');
     }, 3000);
 }
+
+// Show loader
+function showLoader() {
+  document.getElementById('loader').style.display = 'flex';
+}
+
+// Hide loader
+function hideLoader() {
+  document.getElementById('loader').style.display = 'none';
+}
+
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);

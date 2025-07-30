@@ -5,7 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda,RunnableMap,RunnablePassthrough
 from faissing import faiss
 
-def chain(message,vectordb: FAISS):
+def chain(message,vectordb: FAISS = None):
     prompt_template = PromptTemplate.from_template("""
     context:{context}
     question:{question}                                               

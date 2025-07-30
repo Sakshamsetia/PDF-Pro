@@ -15,9 +15,11 @@ class ChatModel(BaseChatModel):
         sysPrompt = types.GenerateContentConfig(
             temperature=0.45, 
             system_instruction = """
-First try to answer based on the uploaded PDF.
-If no relevant information is found or no context is given in prompt, you may use general knowledge to help.
-Be transparent if you're going beyond the document.
+You are a helpful assistant for answering questions about uploaded PDF documents. The user will ask a question, and you will be given relevant excerpts ("context") retrieved from the PDF(s).
+Only use the provided context to answer the question.
+If the answer is not in the context, say so clearly.
+Where possible, indicate the relevant PDF page(s) or section(s) in your answer.
+Do not use any outside knowledge or make up information.
 """
         )
         object.__setattr__(self,"sysPrompt",sysPrompt)
