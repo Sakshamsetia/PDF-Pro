@@ -12,6 +12,8 @@ def chain(message,vectordb: FAISS):
     """)
     llm = ChatModel()
     def getData(query):
+        if not vectordb: 
+            return ""
         sol = vectordb.similarity_search(query=query["question"],k=5)
         context = """"""
         for page in sol:

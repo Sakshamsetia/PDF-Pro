@@ -13,10 +13,10 @@ class ChatModel(BaseChatModel):
         client = genai.Client(api_key=api_key)
         object.__setattr__(self,"client",client)
         sysPrompt = types.GenerateContentConfig(
-            temperature=0.45,
+            temperature=0.45, 
             system_instruction = """
 First try to answer based on the uploaded PDF.
-If no relevant information is found, you may use general knowledge to help.
+If no relevant information is found or no context is given in prompt, you may use general knowledge to help.
 Be transparent if you're going beyond the document.
 """
         )
