@@ -4,14 +4,14 @@ from faissing import faiss
 from langchain_community.vectorstores import FAISS
 import os
 app = Flask(__name__)
-vectordb : FAISS = None
-
+history = []
 @app.route('/')
 def start():
     return render_template('index.html')
 
 @app.route('/files',methods=['POST','GET'])
 def upload():
+    global vectordb
     if 'file' not in request.files:
         return jsonify({"message": "No file uploaded"}), 400
     file = request.files['file']
@@ -26,6 +26,8 @@ def chat():
     query = request.form.get('text')
     print(f"Asked Bot: {query}")
     response = chain(query,vectordb)
+    history.append({"role":"user","text":query})
+    history.append({"role":"bot","text":response})
     return jsonify({"text":response})
 
 if __name__ == "__main__":
